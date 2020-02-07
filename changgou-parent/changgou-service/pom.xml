@@ -17,10 +17,12 @@
         <module>changgou-service-goods</module>
     </modules>
 
-    <dependency>
-        <groupId>com.changgou</groupId>
-        <artifactId>changgou-common-db</artifactId>
-        <version>1.0-SNAPSHOT</version>
-    </dependency>
+    <dependencies>
+        <dependency>
+            <groupId>com.changgou</groupId>
+            <artifactId>changgou-common-db</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
 </project>

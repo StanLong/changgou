@@ -1,4 +1,4 @@
-package com.changgou.eureka;
+package com.changgou.goods.eureka;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
