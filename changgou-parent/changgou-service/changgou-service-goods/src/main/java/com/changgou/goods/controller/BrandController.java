@@ -1,7 +1,7 @@
 package com.changgou.goods.controller;
 
-import com.changgou.goods.entity.Result;
-import com.changgou.goods.entity.StatusCode;
+import com.changgou.entity.Result;
+import com.changgou.entity.StatusCode;
 import com.changgou.goods.goods.pojo.Brand;
 import com.changgou.goods.service.BrandService;
 import com.github.pagehelper.PageInfo;
@@ -29,7 +29,7 @@ public class BrandController {
     }
 
     @GetMapping(value="/{id}")
-    public Result<Brand> findBrandById(@PathVariable(value="id") Integer id){
+    public Result<Brand> findBrandById(@PathVariable(value="id") Long id){
         Brand brand = brandService.findById(id);
         return new Result<>(true, StatusCode.OK, "根据id查询成功", brand);
     }
@@ -48,7 +48,7 @@ public class BrandController {
     }
 
     @DeleteMapping(value="/{id}")
-    public Result deleteBrandById(@PathVariable(value="id") Integer id){
+    public Result deleteBrandById(@PathVariable(value="id") Long id){
         brandService.delete(id);
         return new Result<>(true, StatusCode.OK, "品牌删除成功");
     }

@@ -28,7 +28,7 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public Brand findById(Integer id) {
+    public Brand findById(Long id) {
         return brandMapper.selectByPrimaryKey(id);
     }
 
@@ -44,7 +44,7 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public void delete(Integer id) {
+    public void delete(Long id) {
         brandMapper.deleteByPrimaryKey(id);
     }
 

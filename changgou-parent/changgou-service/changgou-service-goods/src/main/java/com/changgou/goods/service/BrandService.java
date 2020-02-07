@@ -16,13 +16,13 @@ public interface BrandService {
      */
     List<Brand> findAll();
 
-    Brand findById(Integer id);
+    Brand findById(Long id);
 
     void add(Brand brand);
 
     void update(Brand brand);
 
-    void delete(Integer id);
+    void delete(Long id);
 
     List<Brand> findList(Brand brand);
 

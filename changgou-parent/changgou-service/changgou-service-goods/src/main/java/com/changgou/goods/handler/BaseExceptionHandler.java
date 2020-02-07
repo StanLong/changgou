@@ -1,5 +1,7 @@
-package com.changgou.goods.controller;
+package com.changgou.goods.handler;
 
+import com.changgou.entity.StatusCode;
+import com.changgou.entity.Result;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -18,8 +20,8 @@ public class BaseExceptionHandler {
      */
     @ExceptionHandler(value=Exception.class)
     @ResponseBody
-    public com.changgou.goods.entity.Result error(Exception e){
+    public Result error(Exception e){
         e.printStackTrace();
-        return new com.changgou.goods.entity.Result(false, com.changgou.goods.entity.StatusCode.ERROR, e.getMessage());
+        return new Result(false, StatusCode.ERROR, e.getMessage());
     }
 }

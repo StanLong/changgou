@@ -1,4 +1,4 @@
-package com.changgou.goods.entity;
+package com.changgou.entity;
 import java.util.List;
 
 /**
