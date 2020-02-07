@@ -4,6 +4,7 @@ import com.changgou.goods.entity.Result;
 import com.changgou.goods.entity.StatusCode;
 import com.changgou.goods.goods.pojo.Brand;
 import com.changgou.goods.service.BrandService;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,4 +52,25 @@ public class BrandController {
         brandService.delete(id);
         return new Result<>(true, StatusCode.OK, "品牌删除成功");
     }
+
+    @PostMapping(value="/search")
+    public Result<List<Brand>> findList(@RequestBody Brand brand){
+        List<Brand> brandList = brandService.findList(brand);
+        return new Result<>(true, StatusCode.OK, "品牌条件查询", brandList);
+    }
+
+    @GetMapping(value="/search/{page}/{size}")
+    public Result<PageInfo<Brand>> findPage(@PathVariable(value = "page") Integer page, @PathVariable(value = "size") Integer size){
+        PageInfo<Brand> pageInfo = brandService.findPage(page, size);
+        return new Result<>(true, StatusCode.OK, "品牌分页查询", pageInfo);
+    }
+
+    @PostMapping(value="/search/{page}/{size}")
+    public Result<PageInfo<Brand>> findPage(@RequestBody Brand brand,
+                                            @PathVariable(value = "page") Integer page,
+                                            @PathVariable(value = "size") Integer size){
+        PageInfo<Brand> pageInfo = brandService.findPage(brand, page, size);
+        return new Result<>(true, StatusCode.OK, "品牌条件+分页查询", pageInfo);
+    }
+
 }
