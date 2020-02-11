@@ -26,7 +26,10 @@ public class FileUploadController {
                 StringUtils.getFilenameExtension(file.getOriginalFilename()) // 文件扩展名
         );
 
-        FastDFSUtil.upload(fastDFSFile);
-        return new Result(true, StatusCode.OK, "上传成功");
+        String uploads[] = FastDFSUtil.upload(fastDFSFile);
+        // 拼接访问地址
+        //String url = "http://192.168.235.21:8080/" + uploads[0] + "/" + uploads[1];
+        String url = FastDFSUtil.getTrackInfo()+ "/" + uploads[0] + "/" + uploads[1];
+        return new Result(true, StatusCode.OK, "上传成功", url);
     }
 }
