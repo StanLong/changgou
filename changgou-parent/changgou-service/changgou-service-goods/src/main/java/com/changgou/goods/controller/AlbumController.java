@@ -2,11 +2,10 @@ package com.changgou.goods.controller;
 
 import com.changgou.entity.Result;
 import com.changgou.entity.StatusCode;
-import com.changgou.goods.goods.pojo.Album;
+import com.changgou.goods.pojo.Album;
 import com.changgou.goods.service.AlbumService;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

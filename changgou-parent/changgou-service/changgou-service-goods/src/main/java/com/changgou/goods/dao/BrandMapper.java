@@ -1,6 +1,6 @@
 package com.changgou.goods.dao;
 
-import com.changgou.goods.goods.pojo.Brand;
+import com.changgou.goods.pojo.Brand;
 import tk.mybatis.mapper.common.Mapper;
 
 /**

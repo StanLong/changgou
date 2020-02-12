@@ -1,6 +1,6 @@
 package com.changgou.goods.service;
 
-import com.changgou.goods.goods.pojo.Brand;
+import com.changgou.goods.pojo.Brand;
 import com.github.pagehelper.PageInfo;
 
 import java.util.List;
