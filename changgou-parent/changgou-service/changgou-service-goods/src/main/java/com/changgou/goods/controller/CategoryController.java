@@ -4,6 +4,7 @@ import com.changgou.entity.Result;
 import com.changgou.entity.StatusCode;
 import com.changgou.goods.pojo.Category;
 import com.changgou.goods.service.CategoryService;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -96,18 +97,16 @@ public class CategoryController {
      * @param size
      * @return
      */
-//    @GetMapping(value = "/search/{page}/{size}" )
-//    public Result findPage(@RequestParam Map searchMap, @PathVariable  int page, @PathVariable  int size){
-//        Page<Category> pageList = categoryService.findPage(searchMap, page, size);
-//        PageResult pageResult=new PageResult(pageList.getTotal(),pageList.getResult());
-//        return new Result(true,StatusCode.OK,"查询成功",pageResult);
-//    }
+    @PostMapping(value = "/search/{page}/{size}" )
+    public Result findPage(@RequestBody Map searchMap, @PathVariable  int page, @PathVariable  int size){
+        PageInfo<Category> pageInfo = categoryService.findPage(searchMap, page, size);
+        return new Result(true,StatusCode.OK,"查询成功",pageInfo);
+    }
 
     @GetMapping(value = "/list/{pid}")
     public Result<List<Category>> findByParentId(@PathVariable(value="pid")Integer pid){
         List<Category> categoryList = categoryService.findByParentId(pid);
         return new Result(true,StatusCode.OK,"查询子节点成功",categoryList);
     }
-
 
 }

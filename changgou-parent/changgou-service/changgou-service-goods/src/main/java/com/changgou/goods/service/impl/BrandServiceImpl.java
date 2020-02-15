@@ -79,6 +79,16 @@ public class BrandServiceImpl implements BrandService {
     }
 
     /**
+     *  根据分类id 查询品牌集合
+     * @param categoryId 分类id
+     * @return
+     */
+    @Override
+    public List<Brand> findByCategory(Integer categoryId) {
+        return brandMapper.findByCategory(categoryId);
+    }
+
+    /**
      * 构建查询条件
      * @param brand
      * @return
@@ -100,4 +110,6 @@ public class BrandServiceImpl implements BrandService {
         }
         return example;
     }
+
+
 }

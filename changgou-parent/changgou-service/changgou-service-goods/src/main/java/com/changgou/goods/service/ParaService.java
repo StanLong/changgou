@@ -63,7 +63,12 @@ public interface ParaService {
      */
     Page<Para> findPage(Map<String, Object> searchMap, int page, int size);
 
-
+    /**
+     * 根据分类id查询参数集合
+     * @param categoryId
+     * @return
+     */
+    List<Para> findByCategory(Integer categoryId);
 
 
 }

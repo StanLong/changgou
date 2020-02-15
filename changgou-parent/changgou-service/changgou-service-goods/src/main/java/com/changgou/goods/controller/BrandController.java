@@ -73,4 +73,12 @@ public class BrandController {
         return new Result<>(true, StatusCode.OK, "品牌条件+分页查询", pageInfo);
     }
 
+    @GetMapping(value = "/category/{id}")
+    public Result<List<Brand>>  findByCategory(@PathVariable(value = "id") Integer categoryId){
+        List<Brand> brandList = brandService.findByCategory(categoryId);
+        return new Result<>(true, StatusCode.OK, "根据分类id查询品牌集合成功", brandList);
+    }
+
+
+
 }

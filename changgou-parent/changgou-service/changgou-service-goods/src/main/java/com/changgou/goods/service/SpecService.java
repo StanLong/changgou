@@ -65,5 +65,11 @@ public interface SpecService {
 
     List<Map> findSpecListByCategoryName(String categoryName);
 
+    /**
+     * 根据 分类id查询规格集合
+     * @param templateId
+     * @return
+     */
+    List<Spec> findByCategory(Integer categoryId);
 
 }

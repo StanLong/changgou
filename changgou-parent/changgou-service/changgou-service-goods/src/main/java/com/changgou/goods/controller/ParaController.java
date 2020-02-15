@@ -103,5 +103,10 @@ public class ParaController {
         return new Result(true,StatusCode.OK,"查询成功",pageResult);
     }
 
+    @GetMapping(value = "/category/{id}")
+    public Result<List<Para>> findByCategory(@PathVariable(value = "id") Integer categoryId){
+        List<Para> paraList = paraService.findByCategory(categoryId);
+        return new Result(true,StatusCode.OK,"根据分类查询参数集合成功",paraList);
+    }
 
 }

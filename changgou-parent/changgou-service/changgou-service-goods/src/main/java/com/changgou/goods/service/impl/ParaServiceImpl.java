@@ -1,6 +1,8 @@
 package com.changgou.goods.service.impl;
 
+import com.changgou.goods.dao.CategoryMapper;
 import com.changgou.goods.dao.ParaMapper;
+import com.changgou.goods.pojo.Category;
 import com.changgou.goods.service.ParaService;
 import com.changgou.goods.pojo.Para;
 import com.github.pagehelper.Page;
@@ -17,6 +19,9 @@ public class ParaServiceImpl implements ParaService {
 
     @Autowired
     private ParaMapper paraMapper;
+
+    @Autowired
+    private CategoryMapper categoryMapper;
 
     /**
      * 查询全部列表
@@ -102,6 +107,16 @@ public class ParaServiceImpl implements ParaService {
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
         return (Page<Para>)paraMapper.selectByExample(example);
+    }
+
+    @Override
+    public List<Para> findByCategory(Integer categoryId) {
+        // 查询分类数据，获取 template_id
+        Category category = categoryMapper.selectByPrimaryKey(categoryId);
+        // 根据template_id 查询参数集合
+        Para para = new Para();
+        para.setTemplateId(category.getTemplateId());
+        return paraMapper.select(para);
     }
 
     /**

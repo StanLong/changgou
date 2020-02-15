@@ -2,6 +2,7 @@ package com.changgou.goods.service;
 
 import com.changgou.goods.pojo.Category;
 import com.github.pagehelper.Page;
+import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 import java.util.Map;
@@ -61,7 +62,7 @@ public interface CategoryService {
      * @param size
      * @return
      */
-    Page<Category> findPage(Map<String, Object> searchMap, int page, int size);
+    PageInfo<Category> findPage(Map<String, Object> searchMap, int page, int size);
 
     /**
      * 根据分类的父节点id查询所有子节点的集合

@@ -1,10 +1,11 @@
 package com.changgou.goods.service.impl;
 
 import com.changgou.goods.dao.CategoryMapper;
-import com.changgou.goods.service.CategoryService;
 import com.changgou.goods.pojo.Category;
+import com.changgou.goods.service.CategoryService;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
@@ -98,10 +99,11 @@ public class CategoryServiceImpl implements CategoryService {
      * @return 分页结果
      */
     @Override
-    public Page<Category> findPage(Map<String,Object> searchMap, int page, int size){
+    public PageInfo<Category> findPage(Map<String,Object> searchMap, int page, int size){
         PageHelper.startPage(page,size);
         Example example = createExample(searchMap);
-        return (Page<Category>)categoryMapper.selectByExample(example);
+        List<Category> categoryList = categoryMapper.selectByExample(example);
+        return new PageInfo<>(categoryList);
     }
 
     @Override
