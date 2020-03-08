@@ -16,6 +16,8 @@ eureka:
 feign:
   hystrix:
     enabled: true
+
+# 超时配置
 ribbon:
   ReadTimeout:300000
 
