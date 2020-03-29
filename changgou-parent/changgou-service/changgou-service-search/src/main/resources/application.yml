@@ -3,14 +3,16 @@ server:
 spring:
   application:
     name: search
-data:
-    elasticsearch:
-      cluster-name:my-application
-      cluster-nodes:192.168.235.21:9300
+  data:
+      elasticsearch:
+        cluster-name: my-application
+        cluster-nodes: 192.168.235.21:9300
+        repositories:
+          enabled: true
 eureka:
   client:
     service-url:
-      defaultZone:http://127.0.0.1:7001/eureka
+      defaultZone: http://127.0.0.1:7001/eureka
   instance:
     prefer-ip-address: true
 feign:
@@ -19,7 +21,7 @@ feign:
 
 # 超时配置
 ribbon:
-  ReadTimeout:300000
+  ReadTimeout: 300000
 
 hystrix:
   command:
@@ -27,4 +29,4 @@ hystrix:
       execution:
         isolation:
           thread:
-            timeoutInMilliseconds:10000
+            timeoutInMilliseconds: 100000

@@ -5,6 +5,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
+
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -12,7 +14,7 @@ import java.util.*;
  * @date 2020/3/8-16:30
  */
 @Document(indexName = "skuinfo", type = "docs")
-public class SkuInfo {
+public class SkuInfo  implements Serializable {
     // 商品id， 同时也是商品编号
     @Id
     private Long id;
