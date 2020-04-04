@@ -4,10 +4,9 @@ import com.changgou.entity.Result;
 import com.changgou.entity.StatusCode;
 import com.changgou.search.service.SkuService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * @author 矢量
@@ -28,5 +27,15 @@ public class SkuController {
     public Result importData(){
         skuService.importData();
         return new Result(true, StatusCode.OK, "执行成功");
+    }
+
+    /**
+     * 调用搜索实现
+     * @param searchMap
+     * @return
+     */
+    @GetMapping
+    public Map search(@RequestParam(required = false) Map searchMap) throws Exception{
+        return skuService.search(searchMap);
     }
 }
