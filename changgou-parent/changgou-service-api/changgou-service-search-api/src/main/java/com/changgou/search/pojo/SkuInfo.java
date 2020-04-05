@@ -57,7 +57,7 @@ public class SkuInfo  implements Serializable {
      * FieldType.Keyword Keyword 不分词
      */
     @Field(type = FieldType.Keyword)
-    private String catrgoryName;
+    private String categoryName;
 
     // 品牌名称
     @Field(type = FieldType.Keyword)
@@ -156,12 +156,12 @@ public class SkuInfo  implements Serializable {
         this.categoryId = categoryId;
     }
 
-    public String getCatrgoryName() {
-        return catrgoryName;
+    public String getCategoryName() {
+        return categoryName;
     }
 
-    public void setCatrgoryName(String catrgoryName) {
-        this.catrgoryName = catrgoryName;
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
     }
 
     public String getBrandName() {

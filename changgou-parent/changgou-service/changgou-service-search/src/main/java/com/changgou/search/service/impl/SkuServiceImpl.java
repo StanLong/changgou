@@ -9,12 +9,15 @@ import com.changgou.search.pojo.SkuInfo;
 import com.changgou.search.service.SkuService;
 import org.apache.commons.lang.StringUtils;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.aggregations.AggregationBuilders;
+import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.aggregation.AggregatedPage;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,16 +85,62 @@ public class SkuServiceImpl implements SkuService {
 
         }
 
+        // 集合搜索
+        Map<String, Object> resultMap = searchList(nativeSearchQueryBuilder);
+
+
+        // 分类分组查询
+        List<String> categoryList = searchCategoryList(nativeSearchQueryBuilder);
+
+        resultMap.put("categoryList",categoryList);
+        return resultMap;
+    }
+
+    /**
+     *  分类分组查询
+     * @param nativeSearchQueryBuilder
+     * @return
+     */
+    public List<String> searchCategoryList(NativeSearchQueryBuilder nativeSearchQueryBuilder){
         /**
-         * 执行搜索，响应结果给我
+         * 分组查询分类集合
+         * addAggregation() 添加一个聚合操作
+         * 参数1 取别名
+         * 参数2 表示根据哪个域进行分组查询
+         */
+        nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms("skuCategory").field("categoryName"));
+        AggregatedPage<SkuInfo> aggregatedPage = elasticsearchTemplate.queryForPage(nativeSearchQueryBuilder.build(), SkuInfo.class);
+
+        /**
+         * 获取分组数据
+         * aggregatedPage.getAggregations() 获取的是集合，可以根据多个域进行分组
+         * get("skuCategory") 获取指定域的集合数
+         */
+        StringTerms stringTerms = aggregatedPage.getAggregations().get("skuCategory");
+        List<String> categoryList = new ArrayList<String>();
+        for (StringTerms.Bucket bucket : stringTerms.getBuckets()) {
+            String categoryName = bucket.getKeyAsString(); // 其中的一个分类名字
+            categoryList.add(categoryName);
+        }
+        return categoryList;
+    }
+
+    /**
+     * 集合搜索
+     * @param nativeSearchQueryBuilder
+     * @return
+     */
+    public Map<String, Object> searchList(NativeSearchQueryBuilder nativeSearchQueryBuilder){
+        /**
+         * 执行搜索，响应结果
          * queryForPage需要两个参数
          * 1)搜索条件封装对象
          * 2)搜索的结果集（集合数据）需要转换的类型
          */
         AggregatedPage<SkuInfo> page = elasticsearchTemplate.queryForPage(nativeSearchQueryBuilder.build(), SkuInfo.class);
 
-        // 分析数据
 
+        // 分析数据
         // 获取数据结果集
         List<SkuInfo> contents = page.getContent();
 
@@ -100,7 +149,6 @@ public class SkuServiceImpl implements SkuService {
 
         // 总记录数
         long totalElements = page.getTotalElements();
-
         // 封装一个map存储所有数据并返回
         Map<String, Object> resultMap = new HashMap<String ,Object>();
         resultMap.put("rows", contents);
