@@ -17,10 +17,7 @@ import org.springframework.data.elasticsearch.core.aggregation.AggregatedPage;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author 矢量
@@ -95,8 +92,12 @@ public class SkuServiceImpl implements SkuService {
         // 品牌分组查询
         List<String> brandList = searchBrandList(nativeSearchQueryBuilder);
 
+        // 规格分组查询
+        Map<String, Set<String>> specList = searchSpecList(nativeSearchQueryBuilder);
+
         resultMap.put("categoryList",categoryList);
         resultMap.put("brandList", brandList);
+        resultMap.put("specList", specList);
         return resultMap;
     }
 
@@ -156,6 +157,71 @@ public class SkuServiceImpl implements SkuService {
             brandList.add(brandName);
         }
         return brandList;
+    }
+
+    /**
+     *  规格分组查询
+     * @param nativeSearchQueryBuilder
+     * @return
+     */
+    public Map<String, Set<String>> searchSpecList(NativeSearchQueryBuilder nativeSearchQueryBuilder){
+        /**
+         * 分组查询规格集合
+         * addAggregation() 添加一个聚合操作
+         * 参数1 取别名
+         * 参数2 表示根据哪个域进行分组查询
+         */
+        nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms("skuSpec").field("spec.keyword").size(100));
+        AggregatedPage<SkuInfo> aggregatedPage = elasticsearchTemplate.queryForPage(nativeSearchQueryBuilder.build(), SkuInfo.class);
+
+        /**
+         * 获取分组数据
+         * aggregatedPage.getAggregations() 获取的是集合，可以根据多个域进行分组
+         * get("skuBrand") 获取指定域的集合数
+         */
+        StringTerms stringTerms = aggregatedPage.getAggregations().get("skuSpec");
+        List<String> specList = new ArrayList<String>();
+        for (StringTerms.Bucket bucket : stringTerms.getBuckets()) {
+            String specName = bucket.getKeyAsString(); // 其中的一个规格名字
+            specList.add(specName);
+        }
+
+        // 规格汇总合并
+        Map<String, Set<String>> allSpec = putAllSpec(specList);
+
+        return allSpec;
+    }
+
+    /**
+     * 规格汇总合并
+     * @param specList
+     * @return
+     */
+    private Map<String, Set<String>> putAllSpec(List<String> specList) {
+        //合并后的map对象
+        Map<String, Set<String>> allSpec = new HashMap<String, Set<String>>();
+
+        // 1 循环specList对象
+        for (String spec : specList) {
+            // 2 将每个JSON字符串转成Map
+            Map<String, String> specMap = JSON.parseObject(spec, Map.class);
+
+            // 4 合并流程
+            for (Map.Entry<String, String> entry : specMap.entrySet()) {
+                // 4.1 循环所有Map
+                String key = entry.getKey(); // 规格名字
+                String value = entry.getValue(); // 规格值
+
+                // 获取当前规格对应的Set集合数据
+                Set<String> specSet = allSpec.get(key);
+                if(null == specSet){
+                    specSet = new HashSet<>();
+                }
+                specSet.add(value);
+                allSpec.put(key, specSet);
+            }
+        }
+        return allSpec;
     }
 
     /**
