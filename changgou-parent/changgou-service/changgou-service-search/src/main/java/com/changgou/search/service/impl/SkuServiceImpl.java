@@ -92,7 +92,11 @@ public class SkuServiceImpl implements SkuService {
         // 分类分组查询
         List<String> categoryList = searchCategoryList(nativeSearchQueryBuilder);
 
+        // 品牌分组查询
+        List<String> brandList = searchBrandList(nativeSearchQueryBuilder);
+
         resultMap.put("categoryList",categoryList);
+        resultMap.put("brandList", brandList);
         return resultMap;
     }
 
@@ -123,6 +127,35 @@ public class SkuServiceImpl implements SkuService {
             categoryList.add(categoryName);
         }
         return categoryList;
+    }
+
+    /**
+     *  品牌分组查询
+     * @param nativeSearchQueryBuilder
+     * @return
+     */
+    public List<String> searchBrandList(NativeSearchQueryBuilder nativeSearchQueryBuilder){
+        /**
+         * 分组查询分类集合
+         * addAggregation() 添加一个聚合操作
+         * 参数1 取别名
+         * 参数2 表示根据哪个域进行分组查询
+         */
+        nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms("skuBrand").field("brandName"));
+        AggregatedPage<SkuInfo> aggregatedPage = elasticsearchTemplate.queryForPage(nativeSearchQueryBuilder.build(), SkuInfo.class);
+
+        /**
+         * 获取分组数据
+         * aggregatedPage.getAggregations() 获取的是集合，可以根据多个域进行分组
+         * get("skuBrand") 获取指定域的集合数
+         */
+        StringTerms stringTerms = aggregatedPage.getAggregations().get("skuBrand");
+        List<String> brandList = new ArrayList<String>();
+        for (StringTerms.Bucket bucket : stringTerms.getBuckets()) {
+            String brandName = bucket.getKeyAsString(); // 其中的一个品牌名字
+            brandList.add(brandName);
+        }
+        return brandList;
     }
 
     /**
