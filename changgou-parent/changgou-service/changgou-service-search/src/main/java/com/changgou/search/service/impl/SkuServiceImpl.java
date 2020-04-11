@@ -99,6 +99,17 @@ public class SkuServiceImpl implements SkuService {
             if(StringUtils.isNotEmpty(brand)){
                 queryBuilder.must(QueryBuilders.termQuery("brandName", brand));
             }
+
+            // 规格过滤实现：spec_网络=联通&spec_颜色=红
+            for (Map.Entry<String, String> entry : searchMap.entrySet()) {
+                String key = entry.getKey();
+                // 如何 key 以 spec_ 开头，表示规格筛选查询
+                if(key.startsWith("spec_")){
+                    String value = entry.getValue();
+                    queryBuilder.must(QueryBuilders.termQuery("specMap." + key.substring(5) + ".keyword", value));
+                }
+            }
+
         }
         nativeSearchQueryBuilder.withQuery(queryBuilder);
 
