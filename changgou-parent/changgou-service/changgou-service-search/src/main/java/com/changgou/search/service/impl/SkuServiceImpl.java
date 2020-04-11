@@ -110,6 +110,21 @@ public class SkuServiceImpl implements SkuService {
                 }
             }
 
+            //  价格筛选 0-500元 500-1000元
+            // 去掉“”“中文"元"和"以上"
+            // 获取价格区间值
+            String price = searchMap.get("price");
+            if(StringUtils.isNotEmpty(price)){
+                price = price.replace("元", "").replace("以上", "");
+                String[] prices = price.split("-");
+                if(prices != null && prices.length>0){
+                    queryBuilder.must(QueryBuilders.rangeQuery("price").gt(Integer.parseInt(prices[0])));
+                    if(prices.length == 2){
+                        queryBuilder.must(QueryBuilders.rangeQuery("price").lte(Integer.parseInt(prices[1])));
+                    }
+                }
+            }
+
         }
         nativeSearchQueryBuilder.withQuery(queryBuilder);
 
