@@ -8,6 +8,7 @@ import com.changgou.search.dao.SkuEsMapper;
 import com.changgou.search.pojo.SkuInfo;
 import com.changgou.search.service.SkuService;
 import org.apache.commons.lang.StringUtils;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
@@ -52,7 +53,8 @@ public class SkuServiceImpl implements SkuService {
         List<SkuInfo> skuInfoList = JSON.parseArray(JSON.toJSONString(skuResult.getData()), SkuInfo.class);
 
         for(SkuInfo skuInfo : skuInfoList){
-            Map<String, Object> specMap = JSON.parseObject(skuInfo.getSpec(), Map.class);
+            Map<String, Object> specMap
+                    = JSON.parseObject(skuInfo.getSpec(), Map.class);
             skuInfo.setSpecMap(specMap);
         }
         // 调用dao实现数据批量导入
@@ -73,30 +75,55 @@ public class SkuServiceImpl implements SkuService {
         //NativeSearchQueryBuilder 搜索条件构建对象，用于封装各种搜索条件
         NativeSearchQueryBuilder nativeSearchQueryBuilder = new NativeSearchQueryBuilder();
 
+        // 筛选过滤
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+
+
         if(searchMap != null && searchMap.size() >0){
             // 根据关键词搜索
             String keywords = searchMap.get("keywords");
             if(StringUtils.isNotEmpty(keywords)){
-                nativeSearchQueryBuilder.withQuery(QueryBuilders.queryStringQuery(keywords).field("name"));
+                //nativeSearchQueryBuilder.withQuery(QueryBuilders.queryStringQuery(keywords).field("name"));
+                queryBuilder.must(QueryBuilders.queryStringQuery(keywords).field("name"));
             }
 
+            // 输入了分类
+            String category = searchMap.get("category");
+            if(StringUtils.isNotEmpty(category)){
+                //nativeSearchQueryBuilder.withQuery(QueryBuilders.queryStringQuery(keywords).field("name"));
+                queryBuilder.must(QueryBuilders.termQuery("categoryName", category));
+            }
+
+            // 输入了品牌
+            String brand = searchMap.get("brand");
+            if(StringUtils.isNotEmpty(brand)){
+                queryBuilder.must(QueryBuilders.termQuery("brandName", brand));
+            }
         }
+        nativeSearchQueryBuilder.withQuery(queryBuilder);
 
         // 集合搜索
         Map<String, Object> resultMap = searchList(nativeSearchQueryBuilder);
 
+        // 当用户选择了分类，将分类作为搜索条件，则不需要对分类进行分组搜索，因为分组搜索的数据是用于显示分类搜索条件的
+        if(searchMap == null || StringUtils.isEmpty(searchMap.get("category"))){
+            // 分类分组查询
+            List<String> categoryList = searchCategoryList(nativeSearchQueryBuilder);
+            resultMap.put("categoryList",categoryList);
+        }
 
-        // 分类分组查询
-        List<String> categoryList = searchCategoryList(nativeSearchQueryBuilder);
-
+        // 当用户选择了品牌，将品牌作为搜索条件，则不需要对品牌进行分组搜索，因为分组搜索的数据是用于显示品牌搜索条件的
         // 品牌分组查询
-        List<String> brandList = searchBrandList(nativeSearchQueryBuilder);
+        if(searchMap == null || StringUtils.isEmpty(searchMap.get("brand"))){
+            // 分类分组查询
+            List<String> brandList = searchBrandList(nativeSearchQueryBuilder);
+            resultMap.put("brandList", brandList);
+        }
+
 
         // 规格分组查询
         Map<String, Set<String>> specList = searchSpecList(nativeSearchQueryBuilder);
 
-        resultMap.put("categoryList",categoryList);
-        resultMap.put("brandList", brandList);
         resultMap.put("specList", specList);
         return resultMap;
     }
