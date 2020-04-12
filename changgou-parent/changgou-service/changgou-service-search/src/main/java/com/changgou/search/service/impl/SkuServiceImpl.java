@@ -168,7 +168,7 @@ public class SkuServiceImpl implements SkuService {
      * @return
      */
     public Integer convertPage(Map<String, String> searchMap){
-        if(searchMap != null){
+        if(searchMap != null && searchMap.get("pageNum") != null){
             String pageName = searchMap.get("pageNum");
             try {
                 return Integer.parseInt(pageName);
