@@ -13,6 +13,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.aggregation.AggregatedPage;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
@@ -126,6 +127,13 @@ public class SkuServiceImpl implements SkuService {
             }
 
         }
+
+        // 分页,用户不传分页参数，默认第一页
+        Integer pageNum = convertPage(searchMap); // 默认第一页
+        Integer size = 3; // 默认查询的条数
+
+        nativeSearchQueryBuilder.withPageable(PageRequest.of(pageNum-1, size));
+
         nativeSearchQueryBuilder.withQuery(queryBuilder);
 
         // 集合搜索
@@ -152,6 +160,23 @@ public class SkuServiceImpl implements SkuService {
 
         resultMap.put("specList", specList);
         return resultMap;
+    }
+
+    /**
+     * 接收前端传入的分页参数
+     * @param searchMap
+     * @return
+     */
+    public Integer convertPage(Map<String, String> searchMap){
+        if(searchMap != null){
+            String pageName = searchMap.get("pageNum");
+            try {
+                return Integer.parseInt(pageName);
+            }catch (NumberFormatException e){
+                e.printStackTrace();
+            }
+        }
+        return 1;
     }
 
     /**
