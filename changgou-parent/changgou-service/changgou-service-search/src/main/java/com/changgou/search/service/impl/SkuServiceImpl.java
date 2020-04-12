@@ -12,6 +12,8 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.StringTerms;
+import org.elasticsearch.search.sort.FieldSortBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
@@ -124,6 +126,14 @@ public class SkuServiceImpl implements SkuService {
                         queryBuilder.must(QueryBuilders.rangeQuery("price").lte(Integer.parseInt(prices[1])));
                     }
                 }
+            }
+
+            // 排序实现
+            String sortField = searchMap.get("sortField"); // 指定排序的域
+            String sortRule = searchMap.get("sortRule"); // 指定排序的规则
+
+            if(StringUtils.isNotEmpty(sortField) && StringUtils.isNotEmpty(sortRule)){
+                nativeSearchQueryBuilder.withSort(new FieldSortBuilder(sortField).order(SortOrder.valueOf(sortRule)));
             }
 
         }
