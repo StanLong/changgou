@@ -157,26 +157,31 @@ public class SkuServiceImpl implements SkuService {
         // 集合搜索
         Map<String, Object> resultMap = searchList(nativeSearchQueryBuilder);
 
+        // 方式一
         // 当用户选择了分类，将分类作为搜索条件，则不需要对分类进行分组搜索，因为分组搜索的数据是用于显示分类搜索条件的
-        if(searchMap == null || StringUtils.isEmpty(searchMap.get("category"))){
-            // 分类分组查询
-            List<String> categoryList = searchCategoryList(nativeSearchQueryBuilder);
-            resultMap.put("categoryList",categoryList);
-        }
+//        if(searchMap == null || StringUtils.isEmpty(searchMap.get("category"))){
+//            // 分类分组查询
+//            List<String> categoryList = searchCategoryList(nativeSearchQueryBuilder);
+//            resultMap.put("categoryList",categoryList);
+//        }
+//
+//        // 当用户选择了品牌，将品牌作为搜索条件，则不需要对品牌进行分组搜索，因为分组搜索的数据是用于显示品牌搜索条件的
+//        // 品牌分组查询
+//        if(searchMap == null || StringUtils.isEmpty(searchMap.get("brand"))){
+//            // 分类分组查询
+//            List<String> brandList = searchBrandList(nativeSearchQueryBuilder);
+//            resultMap.put("brandList", brandList);
+//        }
+//
+//
+//        // 规格分组查询
+//        Map<String, Set<String>> specList = searchSpecList(nativeSearchQueryBuilder);
+//
+//        resultMap.put("specList", specList);
 
-        // 当用户选择了品牌，将品牌作为搜索条件，则不需要对品牌进行分组搜索，因为分组搜索的数据是用于显示品牌搜索条件的
-        // 品牌分组查询
-        if(searchMap == null || StringUtils.isEmpty(searchMap.get("brand"))){
-            // 分类分组查询
-            List<String> brandList = searchBrandList(nativeSearchQueryBuilder);
-            resultMap.put("brandList", brandList);
-        }
-
-
-        // 规格分组查询
-        Map<String, Set<String>> specList = searchSpecList(nativeSearchQueryBuilder);
-
-        resultMap.put("specList", specList);
+        // 方式二, 代码优化
+        Map<String, Object> groupMap = searchGroupList(nativeSearchQueryBuilder, searchMap);
+        resultMap.putAll(groupMap);
         return resultMap;
     }
 
@@ -195,6 +200,72 @@ public class SkuServiceImpl implements SkuService {
             }
         }
         return 1;
+    }
+
+
+    /**
+     *  分组查询 -> 分组条件由参数传入（分类，品牌，规格等）
+     * @param nativeSearchQueryBuilder
+     * @return
+     */
+    public Map<String, Object> searchGroupList(NativeSearchQueryBuilder nativeSearchQueryBuilder, Map<String, String> searchMap){
+        /**
+         * 分组查询分类集合
+         * addAggregation() 添加一个聚合操作
+         * 参数1 取别名
+         * 参数2 表示根据哪个域进行分组查询
+         */
+        if(searchMap == null || StringUtils.isEmpty(searchMap.get("category"))){
+            nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms("skuCategory").field("categoryName"));
+        }
+        if(searchMap == null || StringUtils.isEmpty(searchMap.get("brand"))){
+            nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms("skuBrand").field("brandName"));
+        }
+        nativeSearchQueryBuilder.addAggregation(AggregationBuilders.terms("skuSpec").field("spec.keyword").size(100));
+        AggregatedPage<SkuInfo> aggregatedPage = elasticsearchTemplate.queryForPage(nativeSearchQueryBuilder.build(), SkuInfo.class);
+
+        // 定义一个map，存储所有分组数据
+        Map<String, Object> groupMapResult = new HashMap<>();
+
+
+        /**
+         * 获取分组数据
+         * aggregatedPage.getAggregations() 获取的是集合，可以根据多个域进行分组
+         * get("skuCategory") 获取指定域的集合数
+         */
+        StringTerms specTerms = aggregatedPage.getAggregations().get("skuSpec");
+        if(searchMap == null || StringUtils.isEmpty(searchMap.get("category"))){
+            StringTerms categoryTerms = aggregatedPage.getAggregations().get("skuCategory");
+            // 获取分类分组集合数据
+            List<String> categoryList = getGroupList(categoryTerms);
+            groupMapResult.put("categoryList",categoryList);
+        }
+        if(searchMap == null || StringUtils.isEmpty(searchMap.get("brand"))){
+            StringTerms brandTerms = aggregatedPage.getAggregations().get("skuBrand");
+            // 获取品牌分组集合数据
+            List<String> brandList = getGroupList(brandTerms);
+            groupMapResult.put("brandList",brandList);
+        }
+        // 获取规格分组集合数据并实现合并操作
+        List<String> specList = getGroupList(specTerms);
+        Map<String, Set<String>> specMap = putAllSpec(specList);
+        groupMapResult.put("specList", specMap);
+
+        return  groupMapResult;
+    }
+
+    /**
+     * 获取分组集合数据
+     * @param stringTerms
+     * @return
+     */
+    public List<String> getGroupList(StringTerms stringTerms){
+        List<String> groupList = new ArrayList<>();
+        for (StringTerms.Bucket bucket : stringTerms.getBuckets()) {
+            String fieldName = bucket.getKeyAsString();
+            groupList.add(fieldName);
+        }
+        return groupList;
     }
 
     /**
