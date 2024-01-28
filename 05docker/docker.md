@@ -293,10 +293,6 @@ docker kill 容器id或容器名: 强制停止容器
 docker log 容器名称/容器id
 ```
 
-
-
-
-
 ## 设置容器开机启动
 ```
 [root@changgou conf]# docker ps -a
