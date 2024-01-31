@@ -207,7 +207,14 @@ docker kill 容器id
 
 ```shell
 docker run -d 容器
-# docker 容器后台运行，就必须要有一个前台进程，docker发现没有应用，应付自动停止。
+
+[root@changgou ~]# docker run -d centos
+1855c11cac4dda470aa74257cb35bcdf62ebaeaae4bb5e33bfc559ba77d7a5ca
+[root@changgou ~]# docker ps
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+# docker ps ， 发现 centos 停止了
+# docker 容器后台运行，就必须要有一个前台进程，docker发现没有应用，会自动停止。
 ```
 
 **查看日志命令**
