@@ -1,5 +1,8 @@
-# 安装mysql
-```
+# docker 安装镜像
+
+# 一、安装mysql
+
+```shell
 [root@changgou ~]# docker pull mysql
 [root@changgou ~]# docker images
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
@@ -9,13 +12,33 @@ tomcat              latest              b56d8850aed5        3 days ago          
 [root@changgou ~]# docker ps -a
 CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                               NAMES
 33803e4f9753        mysql               "docker-entrypoint.s…"   31 seconds ago      Up 30 seconds       0.0.0.0:3306->3306/tcp, 33060/tcp   mysql_changgou
+
+# -e MYSQL_ROOT_PASSWORD=root : 设置当前mysql实例的密码为root
+
+# 设置mysql容器自动启动
+[root@changgou ~]# docker update --restart=always 33803e4f9753
 ```
 这里下载的是mysql最新版本，用cmd连接正常，但是用navicat 去连会出问题，连接协议不一样，有如下两种改法
 + 下载mysql5.7的版本， docker pull mysql:5.7
 + 更改最新版本mysql的连接协议
-	~~~
-    mysql> alter user 'root'@'%' identified with mysql_native_password by 'root';
-	Query OK, 0 rows affected (0.00 sec)
+	~~~shell
+  [root@changgou ~]# docker exec -it 33803e4f9753 /bin/bash
+	root@8aa5af211ee4:/# mysql -u root -p
+  Enter password: 
+  Welcome to the MySQL monitor.  Commands end with ; or \g.
+  Your MySQL connection id is 8
+  Server version: 8.0.27 MySQL Community Server - GPL
+  
+  Copyright (c) 2000, 2021, Oracle and/or its affiliates.
+  
+  Oracle is a registered trademark of Oracle Corporation and/or its
+  affiliates. Other names may be trademarks of their respective
+  owners.
+  
+  Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+  
+  mysql> alter user 'root'@'%' identified with mysql_native_password by 'root';
+  Query OK, 0 rows affected (0.00 sec)
   ~~~
 
 # 安装 fastdfs

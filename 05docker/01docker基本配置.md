@@ -157,6 +157,7 @@ https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors
 {
     "registry-mirrors": ["https://fas7p1ea.mirror.aliyuncs.com"]
 }
+EOF
 
 # 3、重启服务
 [root@node01 ~]# systemctl daemon-reload
