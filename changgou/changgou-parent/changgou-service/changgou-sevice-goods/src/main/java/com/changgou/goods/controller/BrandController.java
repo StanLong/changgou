@@ -35,6 +35,19 @@ public class BrandController {
         return new Result<Brand>(true, StatusCode.OK, "根据id查询商品成功", brand);
     }
 
+    /**
+     * 新增商品
+     * @param brand
+     * @return
+     */
+    @PostMapping
+    public Result add(@RequestBody Brand brand){
+        brandService.add(brand);
+        return new Result(true, StatusCode.OK, "增加品牌成功");
+    }
+
+
+
 }
 
 

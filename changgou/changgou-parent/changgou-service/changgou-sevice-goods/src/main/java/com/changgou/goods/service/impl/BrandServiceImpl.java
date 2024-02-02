@@ -28,5 +28,18 @@ public class BrandServiceImpl implements BrandService {
         return brandMapper.selectByPrimaryKey(id);
     }
 
+    @Override
+    public void add(Brand brand) {
+        /**
+         * 通用mapper的方法中但凡有 Selective 就表示 通用mapper拼装的sql语句会忽略空值
+         * 比如这个对象 brand , 只传入了两个属性 name 、 letter
+         * Mapper.insertSelective(brand) -> 拼装Sql语句 -> insert into tb_brand(name, letter) values(?,?)
+         *
+         * 而不带 Selective 的方法就不会忽略空值
+         * Mapper.insert（brand) -> 拼装sql语句 -> insert into tb_brand(id, name, image, letter, seq) values(?,?,?,?,?)
+         */
+        brandMapper.insertSelective(brand);
+    }
+
 
 }

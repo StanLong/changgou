@@ -8,4 +8,6 @@ public interface BrandService {
     List<Brand> findAll();
 
     Brand findById(Integer id);
+
+    void add(Brand brand);
 }
