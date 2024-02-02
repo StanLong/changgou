@@ -26,6 +26,9 @@ public class BrandController {
         return new Result<>(true, StatusCode.OK, "查询品牌集合成功", brandList);
     }
 
+    /**
+     * 根据id查询品牌
+     */
     @GetMapping(value = "/{id}")
     public Result<Brand> findById(@PathVariable(value = "id") Integer id){
         Brand brand = brandService.findById(id);
