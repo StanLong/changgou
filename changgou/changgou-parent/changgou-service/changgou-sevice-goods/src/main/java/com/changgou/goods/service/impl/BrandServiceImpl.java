@@ -3,8 +3,11 @@ package com.changgou.goods.service.impl;
 import com.changgou.goods.dao.BrandMapper;
 import com.changgou.goods.pojo.Brand;
 import com.changgou.goods.service.BrandService;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import tk.mybatis.mapper.entity.Example;
+import tk.mybatis.mapper.util.StringUtil;
 
 import java.util.List;
 
@@ -39,6 +42,47 @@ public class BrandServiceImpl implements BrandService {
          * Mapper.insert（brand) -> 拼装sql语句 -> insert into tb_brand(id, name, image, letter, seq) values(?,?,?,?,?)
          */
         brandMapper.insertSelective(brand);
+    }
+
+    /**
+     * 根据id修改品牌
+     * @param brand
+     */
+    @Override
+    public void update(Brand brand) {
+        brandMapper.updateByPrimaryKeySelective(brand);
+    }
+
+    @Override
+    public void delete(Integer id) {
+        brandMapper.deleteByPrimaryKey(id);
+    }
+
+
+    public Example createExample(Brand brand){
+        // 自定义条件查询对象
+        Example example = new Example(Brand.class);
+        Example.Criteria criteria = example.createCriteria(); // 条件构造器
+        if (brand != null){
+            if(!StringUtils.isEmpty(brand.getName())){
+                /**
+                 * andLike 参数说明
+                 * 第一个参数：搜索对象的属性名
+                 * 第二个参数：占位符参数，搜索的条件
+                 *
+                 */
+                criteria.andLike("name", "%" + brand.getName() + "%"); // 这段代码会拼接 like 的sql语句
+            }
+            if(!StringUtils.isEmpty(brand.getLetter())){
+                criteria.andEqualTo("letter", brand.getLetter());
+            }
+        }
+        return example;
+    }
+    @Override
+    public List<Brand> findList(Brand brand) {
+        Example example = createExample(brand);
+        return brandMapper.selectByExample(example);
     }
 
 

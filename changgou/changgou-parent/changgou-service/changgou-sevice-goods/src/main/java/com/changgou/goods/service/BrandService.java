@@ -10,4 +10,12 @@ public interface BrandService {
     Brand findById(Integer id);
 
     void add(Brand brand);
+
+    void update(Brand brand);
+
+    void delete(Integer id);
+
+    List<Brand> findList(Brand brand);
+
+
 }

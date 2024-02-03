@@ -46,6 +46,41 @@ public class BrandController {
         return new Result(true, StatusCode.OK, "增加品牌成功");
     }
 
+    /**
+     * 根据品牌id修改品牌
+     * @param brand
+     * @return
+     */
+    @PutMapping(value = "/{id}")
+    public Result update(@PathVariable(value = "id")Integer id, @RequestBody Brand brand){
+        brand.setId(id);
+        brandService.update(brand);
+        return new Result(true, StatusCode.OK, "修改品牌成功");
+    }
+
+    /**
+     * 根据id删除品牌
+     * @param id
+     * @return
+     */
+    @DeleteMapping(value = "/{id}")
+    public Result delete(@PathVariable(value = "id") Integer id){
+        brandService.delete(id);
+        return new Result(true, StatusCode.OK, "根据id删除品牌成功");
+    }
+
+    /**
+     * 多条件查询
+     * @param brand
+     * @return
+     */
+    @PostMapping(value = "/search")
+    public Result<List<Brand>> findList(@RequestBody Brand brand){
+        List<Brand> brandList = brandService.findList(brand);
+        return new Result<List<Brand>>(true, StatusCode.OK, "多条件搜索查询成功", brandList);
+    }
+
+
 
 
 }
