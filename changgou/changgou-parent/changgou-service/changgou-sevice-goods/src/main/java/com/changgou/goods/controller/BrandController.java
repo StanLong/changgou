@@ -2,6 +2,7 @@ package com.changgou.goods.controller;
 
 import com.changgou.goods.pojo.Brand;
 import com.changgou.goods.service.BrandService;
+import com.github.pagehelper.PageInfo;
 import entity.Result;
 import entity.StatusCode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,9 +81,17 @@ public class BrandController {
         return new Result<List<Brand>>(true, StatusCode.OK, "多条件搜索查询成功", brandList);
     }
 
-
-
-
+    /**
+     * 分页查询
+     * @param page 当前页
+     * @param size 每页展示的条数
+     * @return
+     */
+    @GetMapping(value = "/search/{page}/{size}")
+    public Result<PageInfo<Brand>> findPage(@PathVariable(value = "page") Integer page, @PathVariable(value = "size") Integer size){
+        PageInfo<Brand> pageInfo = brandService.findPage(page, size);
+        return new Result<>(true, StatusCode.OK, "分页查询成功", pageInfo);
+    }
 }
 
 

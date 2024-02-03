@@ -3,6 +3,8 @@ package com.changgou.goods.service.impl;
 import com.changgou.goods.dao.BrandMapper;
 import com.changgou.goods.pojo.Brand;
 import com.changgou.goods.service.BrandService;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -83,6 +85,13 @@ public class BrandServiceImpl implements BrandService {
     public List<Brand> findList(Brand brand) {
         Example example = createExample(brand);
         return brandMapper.selectByExample(example);
+    }
+
+    @Override
+    public PageInfo<Brand> findPage(Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        List<Brand> brandList = brandMapper.selectAll();
+        return new PageInfo<Brand>(brandList);
     }
 
 
