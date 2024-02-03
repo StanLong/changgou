@@ -9,7 +9,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
-import tk.mybatis.mapper.util.StringUtil;
 
 import java.util.List;
 
@@ -91,6 +90,14 @@ public class BrandServiceImpl implements BrandService {
     public PageInfo<Brand> findPage(Integer page, Integer size) {
         PageHelper.startPage(page, size);
         List<Brand> brandList = brandMapper.selectAll();
+        return new PageInfo<Brand>(brandList);
+    }
+
+    @Override
+    public PageInfo<Brand> findPage(Brand brand, Integer page, Integer size) {
+        PageHelper.startPage(page, size);
+        Example example = createExample(brand);
+        List<Brand> brandList = brandMapper.selectByExample(example);
         return new PageInfo<Brand>(brandList);
     }
 
