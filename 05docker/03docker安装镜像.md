@@ -1,6 +1,6 @@
 # docker 安装镜像
 
-# 一、安装mysql
+# 一、安装 mysql
 
 ```shell
 [root@changgou ~]# docker pull mysql
@@ -41,14 +41,75 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
   Query OK, 0 rows affected (0.00 sec)
   ~~~
 
-# 安装 fastdfs
-~~~
-[root@changgou ~]# docker pull morunchang/fastdfs
-[root@changgou ~]# docker run -d --name tracker --net=host morunchang/fastdfs sh tracker.sh
-5ab1650b6cc3ae49c4994fa744fb76844c2c20db6f13ac811c0f0b0de197f096   # 运行tracker
-[root@changgou ~]# docker run -d --name storage --net=host -e TRACKER_IP=192.168.235.21:22122 -e GROUP_NAME=group1 morunchang/fastdfs sh storage.sh                                   # 运行storage
-a8a3493ad2b1e43c4ec0b722bce69482bd069372a78c00080939f7c0bdd828e4
-~~~
+# 二、安装 FastDFS
+
+```shell
+# 查看可用的Fastdfs镜像
+[root@changgou ~]# docker search fastdfs
+NAME                           DESCRIPTION                                     STARS     OFFICIAL
+season/fastdfs                 FastDFS                                         92        
+ygqygq2/fastdfs-nginx          fastdfs with nginx/tengine                      34        
+morunchang/fastdfs             A FastDFS image                                 20        
+delron/fastdfs                                                                 18        
+moocu/fastdfs                  fastdfs5.11                                     9         
+qbanxiaoli/fastdfs             FastDFS+FastDHT(单机+集群版)                    16        
+perfree/fastdfsweb             go-fastdfs文件系统的web管理系统                 2         
+luhuiguo/fastdfs               FastDFS is an open source high performance d…   25        
+ecarpo/fastdfs-storage                                                         4         
+mypjb/fastdfs                  this is a fastdfs docker project                0         
+dodotry/fastdfs                更新到最新版本，基于Centos8/nginx1.19.8/Fast…   6         
+manuku/fastdfs-fastdht         fastdfs fastdht                                 2         
+leaon/fastdfs                  fastdfs                                         1         
+manuku/fastdfs-storage-dht     fastdfs storage dht                             0         
+manuku/fastdfs-tracker         fastdfs tracker                                 1         
+imlzw/fastdfs-tracker          fastdfs的tracker服务                            3         
+appcrash/fastdfs_nginx         fastdfs with nginx                              1         
+basemall/fastdfs-nginx         fastdfs with nginx                              1         
+tsl0922/fastdfs                FastDFS is an open source high performance d…   0         
+imlzw/fastdfs-storage-dht      fastdfs的storage服务,并且集成了fastdht的服务…   2         
+lionheart/fastdfs_tracker      fastdfs file system‘s tracker node              1         
+manuku/fastdfs-storage-proxy   fastdfs storage proxy                           0         
+germicide/fastdfs              The image provides  pptx\docx\xlsx to pdf,mp…   0         
+ecarpo/fastdfs                                                                 3         
+chenfengwei/fastdfs                                                            0         
+
+# 安装 STARS 最多的 season/fastdfs 
+[root@changgou ~]# docker pull season/fastdfs 
+
+# 查看已安装的镜像
+[root@changgou ~]# docker images
+REPOSITORY       TAG       IMAGE ID       CREATED       SIZE
+mysql            latest    3218b38490ce   2 years ago   516MB
+season/fastdfs   latest    2cfaf455d26c   8 years ago   205MB
+
+# 创建docker容器
+[root@changgou ~]# docker run -d --restart=always --name tracker --net=host season/fastdfs sh tracker.sh
+f6c6e529e398f020f0b8e228b746871448b8b24de3b45c46f128b6d2ff9adef7
+
+# 创建storage容器
+[root@changgou ~]# docker run -d --restart=always --name storage --net=host -e TRACKER_IP=192.168.235.20:22122 -e GROUP_NAME=group1 season/fastdfs sh storage.sh
+c89b2b93eb572451ceaa3e161dd6054f955ac1f32f4b0a81d1422c9c6b15b662
+- 使用的网络模式是 –net=host, 192.168.235.20是宿主机的IP
+- group1是组名，即storage的组  
+- 如果想要增加新的storage服务器，再次运行该命令，注意更换 新组名
+
+# 查看docker进程
+[root@changgou ~]# docker ps
+CONTAINER ID   IMAGE            COMMAND                  CREATED          STATUS                         PORTS                                                  NAMES
+c89b2b93eb57   season/fastdfs   "/entrypoint.sh sh s…"   19 seconds ago   Restarting (0) 3 seconds ago                                                          storage
+f6c6e529e398   season/fastdfs   "/entrypoint.sh sh t…"   2 minutes ago    Restarting (0) 9 seconds ago                                                          tracker
+```
+
+配置FastDFS
+
+```shell
+
+```
+
+
+
+
+
 在我的环境上防火墙已经关了，所以不用配置开放端口什么的。
 morunchang/fastdfs 已经配置好了nginx和nginx的相关插件，不需要再重新配置。
 
