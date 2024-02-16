@@ -220,11 +220,11 @@ CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
 **查看日志命令**
 
 ```shell
-docker logs -f -t --tailf 条数 容器id
+docker logs -f -t --tail 条数 容器id
 
 # 参数
  -tf               显示日志
- --tailf number    要显示的日志条数
+ --tail number    要显示的日志条数
 
 # 测试，写一段Shell脚本
 [root@changgou ~]# docker run -d centos /bin/bash -c "while true;do echo stanlong;sleep 1;done"

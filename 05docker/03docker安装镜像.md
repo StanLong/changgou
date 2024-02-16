@@ -44,74 +44,173 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 # 二、安装 FastDFS
 
 ```shell
-# 查看可用的Fastdfs镜像
-[root@changgou ~]# docker search fastdfs
-NAME                           DESCRIPTION                                     STARS     OFFICIAL
-season/fastdfs                 FastDFS                                         92        
-ygqygq2/fastdfs-nginx          fastdfs with nginx/tengine                      34        
-morunchang/fastdfs             A FastDFS image                                 20        
-delron/fastdfs                                                                 18        
-moocu/fastdfs                  fastdfs5.11                                     9         
-qbanxiaoli/fastdfs             FastDFS+FastDHT(单机+集群版)                    16        
-perfree/fastdfsweb             go-fastdfs文件系统的web管理系统                 2         
-luhuiguo/fastdfs               FastDFS is an open source high performance d…   25        
-ecarpo/fastdfs-storage                                                         4         
-mypjb/fastdfs                  this is a fastdfs docker project                0         
-dodotry/fastdfs                更新到最新版本，基于Centos8/nginx1.19.8/Fast…   6         
-manuku/fastdfs-fastdht         fastdfs fastdht                                 2         
-leaon/fastdfs                  fastdfs                                         1         
-manuku/fastdfs-storage-dht     fastdfs storage dht                             0         
-manuku/fastdfs-tracker         fastdfs tracker                                 1         
-imlzw/fastdfs-tracker          fastdfs的tracker服务                            3         
-appcrash/fastdfs_nginx         fastdfs with nginx                              1         
-basemall/fastdfs-nginx         fastdfs with nginx                              1         
-tsl0922/fastdfs                FastDFS is an open source high performance d…   0         
-imlzw/fastdfs-storage-dht      fastdfs的storage服务,并且集成了fastdht的服务…   2         
-lionheart/fastdfs_tracker      fastdfs file system‘s tracker node              1         
-manuku/fastdfs-storage-proxy   fastdfs storage proxy                           0         
-germicide/fastdfs              The image provides  pptx\docx\xlsx to pdf,mp…   0         
-ecarpo/fastdfs                                                                 3         
-chenfengwei/fastdfs                                                            0         
-
-# 安装 STARS 最多的 season/fastdfs 
-[root@changgou ~]# docker pull season/fastdfs 
+# 下载FastDFS镜像
+[root@changgou ~]# docker pull morunchang/fastdfs
 
 # 查看已安装的镜像
 [root@changgou ~]# docker images
-REPOSITORY       TAG       IMAGE ID       CREATED       SIZE
-mysql            latest    3218b38490ce   2 years ago   516MB
-season/fastdfs   latest    2cfaf455d26c   8 years ago   205MB
+REPOSITORY           TAG       IMAGE ID       CREATED       SIZE
+mysql                latest    3218b38490ce   2 years ago   516MB
+morunchang/fastdfs   latest    a729ac95698a   7 years ago   460MB
 
 # 创建docker容器
-[root@changgou ~]# docker run -d --restart=always --name tracker --net=host season/fastdfs sh tracker.sh
-f6c6e529e398f020f0b8e228b746871448b8b24de3b45c46f128b6d2ff9adef7
+[root@changgou ~]# docker run -d --restart=always --name tracker --net=host morunchang/fastdfs sh tracker.sh
+901b271007ed4d979b8352c2c5d38bc92f6481f3862ab67a7d3ba74a1240b8c0
+
 
 # 创建storage容器
-[root@changgou ~]# docker run -d --restart=always --name storage --net=host -e TRACKER_IP=192.168.235.20:22122 -e GROUP_NAME=group1 season/fastdfs sh storage.sh
-c89b2b93eb572451ceaa3e161dd6054f955ac1f32f4b0a81d1422c9c6b15b662
+[root@changgou ~]# docker run -d --restart=always --name storage --net=host -e TRACKER_IP=192.168.235.20:22122 -e GROUP_NAME=group1 morunchang/fastdfs sh storage.sh
+cbaf225a7cf934d8c8759596eb39a511700e0f5ffd032133caadd84826d782ae
 - 使用的网络模式是 –net=host, 192.168.235.20是宿主机的IP
 - group1是组名，即storage的组  
 - 如果想要增加新的storage服务器，再次运行该命令，注意更换 新组名
 
 # 查看docker进程
 [root@changgou ~]# docker ps
-CONTAINER ID   IMAGE            COMMAND                  CREATED          STATUS                         PORTS                                                  NAMES
-c89b2b93eb57   season/fastdfs   "/entrypoint.sh sh s…"   19 seconds ago   Restarting (0) 3 seconds ago                                                          storage
-f6c6e529e398   season/fastdfs   "/entrypoint.sh sh t…"   2 minutes ago    Restarting (0) 9 seconds ago                                                          tracker
+CONTAINER ID   IMAGE                COMMAND                  CREATED          STATUS          PORTS                                                  NAMES
+cbaf225a7cf9   morunchang/fastdfs   "sh storage.sh"          17 seconds ago   Up 16 seconds                                                          storage
+901b271007ed   morunchang/fastdfs   "sh tracker.sh"          41 seconds ago   Up 40 seconds                                                          tracker
 ```
 
-配置FastDFS
+morunchang/fastdfs 已经配置好了nginx和nginx的相关插件，不需要再重新配置。
+
+![](./doc/06.png)
+
+查看FastDFS的nginx配置
 
 ```shell
+# 进入 fastdfs 交互式命令行
+[root@changgou ~]# docker exec -it storage /bin/bash
 
+root@changgou:/# cd /etc/nginx/conf/
+root@changgou:/etc/nginx/conf# ls
+fastcgi.conf          fastcgi_params          koi-utf  mime.types          nginx.conf          scgi_params          uwsgi_params          win-utf
+fastcgi.conf.default  fastcgi_params.default  koi-win  mime.types.default  nginx.conf.default  scgi_params.default  uwsgi_params.default
+
+root@changgou:/etc/nginx/conf# cat nginx.conf
+
+#user  nobody;
+worker_processes  1;
+
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+#error_log  logs/error.log  info;
+
+#pid        logs/nginx.pid;
+
+
+events {
+    worker_connections  1024;
+}
+
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    #log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+    #                  '$status $body_bytes_sent "$http_referer" '
+    #                  '"$http_user_agent" "$http_x_forwarded_for"';
+
+    #access_log  logs/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    #keepalive_timeout  0;
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    server {
+        listen       8080;
+        server_name  localhost;
+
+        #charset koi8-r;
+
+        #access_log  logs/host.access.log  main;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+
+        location ~ /M00 {
+                    root /data/fast_data/data;
+                    ngx_fastdfs_module;
+        }
+
+        #error_page  404              /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+        # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+        #
+        #location ~ \.php$ {
+        #    proxy_pass   http://127.0.0.1;
+        #}
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        #location ~ \.php$ {
+        #    root           html;
+        #    fastcgi_pass   127.0.0.1:9000;
+        #    fastcgi_index  index.php;
+        #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+        #    include        fastcgi_params;
+        #}
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+        #
+        #location ~ /\.ht {
+        #    deny  all;
+        #}
+    }
+
+
+    # another virtual host using mix of IP-, name-, and port-based configuration
+    #
+    #server {
+    #    listen       8000;
+    #    listen       somename:8080;
+    #    server_name  somename  alias  another.alias;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+
+
+    # HTTPS server
+    #
+    #server {
+    #    listen       443 ssl;
+    #    server_name  localhost;
+
+    #    ssl_certificate      cert.pem;
+    #    ssl_certificate_key  cert.key;
+
+    #    ssl_session_cache    shared:SSL:1m;
+    #    ssl_session_timeout  5m;
+
+    #    ssl_ciphers  HIGH:!aNULL:!MD5;
+    #    ssl_prefer_server_ciphers  on;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+
+}
 ```
-
-
-
-
-
-在我的环境上防火墙已经关了，所以不用配置开放端口什么的。
-morunchang/fastdfs 已经配置好了nginx和nginx的相关插件，不需要再重新配置。
 
 # 安装redis
 ```
