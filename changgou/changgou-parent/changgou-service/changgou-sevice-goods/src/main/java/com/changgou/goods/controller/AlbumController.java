@@ -1,14 +1,19 @@
 package com.changgou.goods.controller;
-
 import com.changgou.goods.pojo.Album;
 import com.changgou.goods.service.AlbumService;
 import com.github.pagehelper.PageInfo;
 import entity.Result;
 import entity.StatusCode;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+
+/****
+ * @Author:admin
+ * @Description:
+ * @Date 2019/6/14 0:18
+ *****/
 
 @RestController
 @RequestMapping("/album")
@@ -27,9 +32,9 @@ public class AlbumController {
      */
     @PostMapping(value = "/search/{page}/{size}" )
     public Result<PageInfo> findPage(@RequestBody(required = false)  Album album, @PathVariable  int page, @PathVariable  int size){
-        //执行搜索
+        //调用AlbumService实现分页条件查询Album
         PageInfo<Album> pageInfo = albumService.findPage(album, page, size);
-        return new Result(true, StatusCode.OK,"查询成功",pageInfo);
+        return new Result(true,StatusCode.OK,"查询成功",pageInfo);
     }
 
     /***
@@ -40,7 +45,7 @@ public class AlbumController {
      */
     @GetMapping(value = "/search/{page}/{size}" )
     public Result<PageInfo> findPage(@PathVariable  int page, @PathVariable  int size){
-        //分页查询
+        //调用AlbumService实现分页查询Album
         PageInfo<Album> pageInfo = albumService.findPage(page, size);
         return new Result<PageInfo>(true,StatusCode.OK,"查询成功",pageInfo);
     }
@@ -52,6 +57,7 @@ public class AlbumController {
      */
     @PostMapping(value = "/search" )
     public Result<List<Album>> findList(@RequestBody(required = false)  Album album){
+        //调用AlbumService实现条件查询Album
         List<Album> list = albumService.findList(album);
         return new Result<List<Album>>(true,StatusCode.OK,"查询成功",list);
     }
@@ -63,6 +69,7 @@ public class AlbumController {
      */
     @DeleteMapping(value = "/{id}" )
     public Result delete(@PathVariable Long id){
+        //调用AlbumService实现根据主键删除
         albumService.delete(id);
         return new Result(true,StatusCode.OK,"删除成功");
     }
@@ -77,7 +84,7 @@ public class AlbumController {
     public Result update(@RequestBody  Album album,@PathVariable Long id){
         //设置主键值
         album.setId(id);
-        //修改数据
+        //调用AlbumService实现修改Album
         albumService.update(album);
         return new Result(true,StatusCode.OK,"修改成功");
     }
@@ -89,6 +96,7 @@ public class AlbumController {
      */
     @PostMapping
     public Result add(@RequestBody   Album album){
+        //调用AlbumService实现添加Album
         albumService.add(album);
         return new Result(true,StatusCode.OK,"添加成功");
     }
@@ -100,7 +108,7 @@ public class AlbumController {
      */
     @GetMapping("/{id}")
     public Result<Album> findById(@PathVariable Long id){
-        //根据ID查询
+        //调用AlbumService实现根据主键查询Album
         Album album = albumService.findById(id);
         return new Result<Album>(true,StatusCode.OK,"查询成功",album);
     }
@@ -110,8 +118,9 @@ public class AlbumController {
      * @return
      */
     @GetMapping
-    public Result<Album> findAll(){
+    public Result<List<Album>> findAll(){
+        //调用AlbumService实现查询所有Album
         List<Album> list = albumService.findAll();
-        return new Result<Album>(true, StatusCode.OK,"查询成功",list) ;
+        return new Result<List<Album>>(true, StatusCode.OK,"查询成功",list) ;
     }
 }
