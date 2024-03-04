@@ -172,6 +172,17 @@ public class SpuController {
         return new Result(true,StatusCode.OK,"还原成功");
     }
 
+    /**
+     * 批量上架商品
+     * @param ids
+     * @return
+     */
+    @PutMapping("/put/many")
+    public Result putMany(@RequestBody Long[] ids){
+        spuService.putMany(ids);
+        return new Result(true, StatusCode.OK, "上架成功");
+    }
+
 
 
 

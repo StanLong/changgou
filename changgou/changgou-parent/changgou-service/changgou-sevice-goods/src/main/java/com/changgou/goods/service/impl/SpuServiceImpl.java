@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -275,7 +276,6 @@ public class SpuServiceImpl implements SpuService {
             condition.setSpuId(spu.getId());
             skuMapper.delete(condition);
             //2.再新增
-
         }
 
 
@@ -397,7 +397,27 @@ public class SpuServiceImpl implements SpuService {
         criteria.andEqualTo("id",id);//where id =1
         criteria.andEqualTo("isDelete","1");
         spuMapper.updateByExampleSelective(data,exmaple);
-// spuMapper.updateByPrimaryKeySelective(spu);//根据主键来进行更新  update set name=? where id=?
+        // spuMapper.updateByPrimaryKeySelective(spu);//根据主键来进行更新  update set name=? where id=?
+    }
+
+    @Override
+    public void putMany(Long[] ids){
+        Example example = new Example(Spu.class);
+        Example.Criteria criteria = example.createCriteria();
+
+        criteria.andIn("id", Arrays.asList(ids));
+
+        // 批量上架的商品都是未删除状态
+        criteria.andEqualTo("isDelete", "0");
+
+        // 批量上架的商品都已审核
+        criteria.andEqualTo("status", "1");
+
+        Spu spu = new Spu();
+        spu.setIsMarketable("1");
+
+        spuMapper.updateByExampleSelective(spu, example);
+
     }
 
 

@@ -85,4 +85,6 @@ public interface SpuService {
 
 
     void restoreSpu(Long id);
+
+    void putMany(Long[] ids);
 }
