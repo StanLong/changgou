@@ -1,37 +1,67 @@
 # LUA 脚本
 
-## 应用场景
-* 游戏开发
-* 独立应用脚本
-* Web应用脚本
-* 扩展数据库插件如 MySQL Proxy 和 MySQL WorkBench
-* 安全系统，如入侵检测系统
-* redis中嵌套调用实现类似事务的功能
-* web容器中应用处理一些过滤 缓存等逻辑，例如nginx
+## 1 LUA介绍
 
-## LUA的安装
-1. 官网下载地址 http://www.lua.org/download.html 下载 lua-5.3.5.tar.gz
-2. 上传lua到linux
-3. 解压 `[root@changgou opt]# tar -zxf lua-5.3.5.tar.gz` 
-4. 安装
-	~~~
-    安装依赖的库： yum install libtermcap-devel ncurses-devel libevent-devel readline-devel
-    [root@changgou opt]# cd lua-5.3.5
-    [root@changgou lua-5.3.5]# make linux test
-    执行如下命令查看是否安装成功
-    [root@changgou lua-5.3.5]# lua -i
-	Lua 5.1.4  Copyright (C) 1994-2008 Lua.org, PUC-Rio
-	>
-    ~~~
+### 1.1 lua是什么
 
-## 入门程序
-~~~
-脚本编程
+Lua [1]  是一个小巧的[脚本语言](https://baike.baidu.com/item/%E8%84%9A%E6%9C%AC%E8%AF%AD%E8%A8%80)。它是巴西里约热内卢天主教大学（Pontifical Catholic University of Rio de Janeiro）里的一个由Roberto Ierusalimschy、Waldemar Celes 和 Luiz Henrique de Figueiredo三人所组成的研究小组于1993年开发的。 其设计目的是为了通过灵活嵌入应用程序中从而为应用程序提供灵活的扩展和定制功能。Lua由标准C编写而成，几乎在所有操作系统和平台上都可以编译，运行。Lua并没有提供强大的库，这是由它的定位决定的。所以Lua不适合作为开发独立应用程序的语言。Lua 有一个同时进行的JIT项目，提供在特定平台上的即时编译功能。
+
+简单来说：
+
+Lua 是一种轻量小巧的脚本语言，用标准C语言编写并以源代码形式开放， 其设计目的是为了嵌入应用程序中，从而为应用程序提供灵活的扩展和定制功能。
+
+### 1.2 特性
+
+- 支持面向过程(procedure-oriented)编程和函数式编程(functional programming)；
+- 自动内存管理；只提供了一种通用类型的表（table），用它可以实现数组，哈希表，集合，对象；
+- 语言内置模式匹配；闭包(closure)；函数也可以看做一个值；提供多线程（协同进程，并非操作系统所支持的线程）支持；
+- 通过闭包和table可以很方便地支持面向对象编程所需要的一些关键机制，比如数据抽象，虚函数，继承和重载等。
+
+### 1.3 应用场景
+
+- 游戏开发
+- 独立应用脚本
+- Web 应用脚本
+- 扩展和数据库插件如：MySQL Proxy 和 MySQL WorkBench
+- 安全系统，如入侵检测系统
+- redis中嵌套调用实现类似事务的功能
+- web容器中应用处理一些过滤 缓存等等的逻辑，例如nginx。
+
+### 1.4 LUA的安装
+
+有linux版本的安装也有mac版本的安装。。我们采用linux版本的安装，首先我们准备一个linux虚拟机。
+
+安装步骤,在linux系统中执行下面的命令。
+
+```shell
+# 先安装依赖库
+yum install libtermcap-devel ncurses-devel libevent-devel readline-devel
+
+# 安装LUA
+wget -c  http://www.lua.org/ftp/lua-5.3.5.tar.gz
+tar zxf lua-5.3.5.tar.gz
+cd lua-5.3.5
+make linux test
+
+# 执行 lua 命令查看是否安装成功
+[root@changgou ~]# lua
+Lua 5.1.4  Copyright (C) 1994-2008 Lua.org, PUC-Rio
+> 
+# 或者执行 lua -a 也可以进入到 lua的控制台
+[root@changgou ~]# lua -i
+Lua 5.1.4  Copyright (C) 1994-2008 Lua.org, PUC-Rio
+> 
+```
+
+### 1.5 入门程序
+
+~~~shell
+# 脚本编程
 [root@changgou ~]# vi hello.lua
 print("hello");
 [root@changgou ~]# lua hello.lua 
 hello
-交互式编程
+# 交互式编程
 [root@changgou ~]# lua 
 Lua 5.1.4  Copyright (C) 1994-2008 Lua.org, PUC-Rio
 > print("Hello lua");
