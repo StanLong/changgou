@@ -182,8 +182,4 @@ public class SpuController {
         spuService.putMany(ids);
         return new Result(true, StatusCode.OK, "上架成功");
     }
-
-
-
-
 }
