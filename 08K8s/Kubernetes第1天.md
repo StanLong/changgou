@@ -272,14 +272,18 @@ swap分区指的是虚拟内存分区，它的作用是在物理内存使用完�
 # /dev/mapper/centos-swap swap                      swap    defaults        0 0
 ~~~
 
+或者直接执行 `sed -i "s/^[^#].*swap*/# &/" /etc/fstab`
+
 7）修改linux的内核参数
 
 ~~~powershell
 # 修改linux的内核参数，添加网桥过滤和地址转发功能
 # 编辑/etc/sysctl.d/kubernetes.conf文件，添加如下配置:
+cat > /etc/sysctl.d/kubernetes.conf << EOF
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 net.ipv4.ip_forward = 1
+EOF
 
 # 重新加载配置
 [root@master ~]# sysctl -p
@@ -298,8 +302,8 @@ net.ipv4.ip_forward = 1
 两者比较的话，ipvs的性能明显要高一些，但是如果要使用它，需要手动载入ipvs模块
 
 ~~~powershell
-# 1 安装ipset和ipvsadm
-[root@master ~]# yum install ipset ipvsadmin -y
+# 1 安装ipset和 ipvsadm
+[root@master ~]# yum install ipset ipvsadm -y
 
 # 2 添加需要加载的模块写入脚本文件
 [root@master ~]# cat <<EOF >  /etc/sysconfig/modules/ipvs.modules
