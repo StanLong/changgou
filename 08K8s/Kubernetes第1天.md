@@ -346,15 +346,26 @@ EOF
 # 必须指定--setopt=obsoletes=0，否则yum会自动安装更高版本
 [root@master ~]# yum install --setopt=obsoletes=0 docker-ce-18.06.3.ce-3.el7 -y
 
-# 4 添加一个配置文件
+# 4 配置docker阿里云加速器，https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors
 # Docker在默认情况下使用的Cgroup Driver为cgroupfs，而kubernetes推荐使用systemd来代替cgroupfs
-[root@master ~]# mkdir /etc/docker
-[root@master ~]# cat <<EOF >  /etc/docker/daemon.json
+# [root@master ~]# mkdir /etc/docker
+# [root@master ~]# cat <<EOF >  /etc/docker/daemon.json
+# {
+#   "exec-opts": ["native.cgroupdriver=systemd"],
+#  "registry-mirrors": ["https://fas7p1ea.mirror.aliyuncs.com"]
+# }
+# EOF
+
+# 4 配置docker阿里云加速器， 2024年6月dockerhub被墙了，加速器用下面这个
+cat > /etc/docker/daemon.json << EOF
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
-  "registry-mirrors": ["https://kn0t2bca.mirror.aliyuncs.com"]
+  "registry-mirrors": [
+     "https://dockerpull.com"
+  ]
 }
 EOF
+
 
 # 5 启动docker
 [root@master ~]# systemctl restart docker
@@ -369,6 +380,7 @@ EOF
 ~~~powershell
 # 由于kubernetes的镜像源在国外，速度比较慢，这里切换成国内的镜像源
 # 编辑/etc/yum.repos.d/kubernetes.repo，添加下面的配置 
+cat > /etc/yum.repos.d/kubernetes.repo << EOF
 [kubernetes]
 name=Kubernetes
 baseurl=http://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64
@@ -377,14 +389,17 @@ gpgcheck=0
 repo_gpgcheck=0
 gpgkey=http://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg
        http://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
+EOF
 
 # 安装kubeadm、kubelet和kubectl
 [root@master ~]# yum install --setopt=obsoletes=0 kubeadm-1.17.4-0 kubelet-1.17.4-0 kubectl-1.17.4-0 -y
 
 # 配置kubelet的cgroup
 # 编辑/etc/sysconfig/kubelet，添加下面的配置
+cat > /etc/sysconfig/kubelet << EOF
 KUBELET_CGROUP_ARGS="--cgroup-driver=systemd"
 KUBE_PROXY_MODE="ipvs"
+EOF
 
 # 4 设置kubelet开机自启
 [root@master ~]# systemctl enable kubelet
@@ -462,10 +477,9 @@ kubernetes支持多种网络插件，比如flannel、calico、canal等等，任�
 >
 
 ~~~powershell
-# 获取fannel的配置文件
+# 获取fannel的配置文件, 这个文件要是下载不下来可以直接用资料里准备好的
 [root@master ~]# wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
-# 修改文件中quay.io仓库为quay-mirror.qiniu.com
 
 # 使用配置文件启动fannel
 [root@master ~]# kubectl apply -f kube-flannel.yml
@@ -476,6 +490,8 @@ NAME     STATUS   ROLES    AGE     VERSION
 master   Ready    master   15m     v1.17.4
 node1    Ready    <none>   8m53s   v1.17.4
 node2    Ready    <none>   8m50s   v1.17.4
+
+# 如果这里没有变成 ready ， 参考文档 https://blog.csdn.net/m0_66908465/article/details/131297723?spm=1001.2014.3001.5501
 ~~~
 
 至此，kubernetes的集群环境搭建完成
@@ -771,7 +787,6 @@ kubectl api-resources
 		<td>配置</td>
 	</tr>
 </table>
-
 **操作**
 
 kubernetes允许对资源进行多种操作，可以通过--help查看详细的操作命令

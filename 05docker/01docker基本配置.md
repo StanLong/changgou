@@ -47,11 +47,13 @@ yum install -y yum-utils
 # 3、安装国内的镜像仓库
 yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 
+
 # 安装好之后更新索引
 yum makecache fast
 
 # 4、安装docker相关 ， docker-ce 社区版本(默认安装最新版本)  docker-ee 企业版
-yum install -y docker-ce docker-ce-cli containerd.io
+yum install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
 
 # 5、启动docer
 systemctl start docker
@@ -144,6 +146,9 @@ https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors
 ### 2、配置使用
 
 ```shell
+# 2024年6月份dockerhub被墙了，替换方案： https://www.bilibili.com/video/BV1w4421X7jE/?spm_id_from=333.337.search-card.all.click&vd_source=165a812497dd3d7dfba718ae4ef14867
+
+# ---------------------------------------------略---------------------------------------------
 # 按照上图第二步配置镜像加速器操作
 #1、新建一个目录
 [root@node01 ~]# mkdir -p /etc/docker
