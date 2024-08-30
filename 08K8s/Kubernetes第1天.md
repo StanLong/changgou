@@ -357,6 +357,7 @@ EOF
 # EOF
 
 # 4 配置docker阿里云加速器， 2024年6月dockerhub被墙了，加速器用下面这个
+# 参考 https://www.bilibili.com/video/BV1w4421X7jE/?spm_id_from=333.337.search-card.all.click&vd_source=165a812497dd3d7dfba718ae4ef14867
 cat > /etc/docker/daemon.json << EOF
 {
   "exec-opts": ["native.cgroupdriver=systemd"],
