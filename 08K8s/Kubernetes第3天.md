@@ -1250,7 +1250,7 @@ NAME                        READY   STATUS    RESTARTS   AGE   IP            NOD
 pod-nodeaffinity-required   1/1     Running   0          11s   10.244.1.89   node1 ......
 ~~~
 
-接下来再演示一下`requiredDuringSchedulingIgnoredDuringExecution` ,
+接下来再演示一下`preferredDuringSchedulingIgnoredDuringExecution` ,
 
 创建pod-nodeaffinity-preferred.yaml
 
