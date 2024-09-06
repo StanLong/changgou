@@ -1459,7 +1459,7 @@ spec:
         topologyKey: kubernetes.io/hostname
 ~~~
 
-上面配置表达的意思是：新Pod必须要与拥有标签nodeenv=pro的pod不在同一Node上，运行测试一下。
+上面配置表达的意思是：新Pod必须要与拥有标签podenv=pro的pod不在同一Node上，运行测试一下。
 
 ~~~powershell
 # 创建pod
