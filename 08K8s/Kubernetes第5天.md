@@ -434,7 +434,7 @@ Ingress（以Nginx为例）的工作原理如下：
 [root@master ingress-controller]# wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/mandatory.yaml
 [root@master ingress-controller]# wget https://raw.githubusercontent.com/kubernetes/ingress-nginx/nginx-0.30.0/deploy/static/provider/baremetal/service-nodeport.yaml
 
-# 修改mandatory.yaml文件中的仓库
+# 修改mandatory.yaml文件中的仓库， -- 2024-09-09 亲测不改也可以，可以直接执行这两个yaml文件
 # 修改quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.30.0
 # 为quay-mirror.qiniu.com/kubernetes-ingress-controller/nginx-ingress-controller:0.30.0
 # 创建ingress-nginx
