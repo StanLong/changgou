@@ -737,7 +737,7 @@ NAME                  READY   STATUS    RESTARTS   AGE   IP             NODE   .
 volume-emptydir   2/2     Running   0          97s   10.244.1.100   node1  ......
 
 # 通过podIp访问nginx
-[root@master ~]# curl 10.244.1.100
+[root@master ~]# curl 10.244.1.100:80
 ......
 
 # 通过kubectl logs命令查看指定容器的标准输出
@@ -785,13 +785,13 @@ spec:
 
 ~~~markdown
 关于type的值的一点说明：
-	DirectoryOrCreate 目录存在就使用，不存在就先创建后使用
-	Directory	目录必须存在
-	FileOrCreate  文件存在就使用，不存在就先创建后使用
-	File 文件必须存在	
-    Socket	unix套接字必须存在
-	CharDevice	字符设备必须存在
-	BlockDevice 块设备必须存在
+    DirectoryOrCreate  目录存在就使用，不存在就先创建后使用
+    Directory          目录必须存在
+    FileOrCreate       文件存在就使用，不存在就先创建后使用
+    File               文件必须存在    
+    Socket             unix套接字必须存在
+    CharDevice         字符设备必须存在
+    BlockDevice        块设备必须存在
 ~~~
 
 ~~~powershell
@@ -895,7 +895,7 @@ volume-nfs        2/2     Running   0          2m9s
 access.log  error.log
 ~~~
 
-##高级存储
+## 高级存储
 
 ### PV和PVC
 
