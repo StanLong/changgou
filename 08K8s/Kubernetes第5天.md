@@ -141,11 +141,11 @@ pc-deployment-66cb59b984-wnncx   1/1     Running    10.244.1.39   node1    app=n
 # echo "10.244.1.40" > /usr/share/nginx/html/index.html
 
 #修改完毕之后，访问测试
-[root@master ~]# curl 10.244.1.40
+[root@master ~]# curl 10.244.1.40:80
 10.244.1.40
-[root@master ~]# curl 10.244.2.33
+[root@master ~]# curl 10.244.2.33:80
 10.244.2.33
-[root@master ~]# curl 10.244.1.39
+[root@master ~]# curl 10.244.1.39:80
 10.244.1.39
 ~~~
 
@@ -262,22 +262,22 @@ TCP  10.97.97.97:80 rr persistent 10800
 service "service-clusterip" deleted
 ~~~
 
-### HeadLiness类型的Service
+### Headless类型的Service
 
-​    在某些场景中，开发人员可能不想使用Service提供的负载均衡功能，而希望自己来控制负载均衡策略，针对这种情况，kubernetes提供了HeadLiness  Service，这类Service不会分配Cluster IP，如果想要访问service，只能通过service的域名进行查询。
+​    在某些场景中，开发人员可能不想使用Service提供的负载均衡功能，而希望自己来控制负载均衡策略，针对这种情况，kubernetes提供了Headless  Service，这类Service不会分配Cluster IP，如果想要访问service，只能通过service的域名进行查询。
 
-创建service-headliness.yaml
+创建service-headless.yaml
 
 ~~~yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: service-headliness
+  name: service-headless
   namespace: dev
 spec:
   selector:
     app: nginx-pod
-  clusterIP: None # 将clusterIP设置为None，即可创建headliness Service
+  clusterIP: None # 将clusterIP设置为None，即可创建headless Service
   type: ClusterIP
   ports:
   - port: 80    
@@ -286,17 +286,17 @@ spec:
 
 ~~~powershell
 # 创建service
-[root@master ~]# kubectl create -f service-headliness.yaml
-service/service-headliness created
+[root@master ~]# kubectl create -f service-headless.yaml
+service/service-headless created
 
 # 获取service， 发现CLUSTER-IP未分配
-[root@master ~]# kubectl get svc service-headliness -n dev -o wide
+[root@master ~]# kubectl get svc service-headless -n dev -o wide
 NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE   SELECTOR
-service-headliness   ClusterIP   None         <none>        80/TCP    11s   app=nginx-pod
+service-headless   ClusterIP   None         <none>        80/TCP    11s   app=nginx-pod
 
 # 查看service详情
-[root@master ~]# kubectl describe svc service-headliness  -n dev
-Name:              service-headliness
+[root@master ~]# kubectl describe svc service-headless  -n dev
+Name:              service-headless
 Namespace:         dev
 Labels:            <none>
 Annotations:       <none>
@@ -315,10 +315,10 @@ Events:            <none>
 nameserver 10.96.0.10
 search dev.svc.cluster.local svc.cluster.local cluster.local
 
-[root@master ~]# dig @10.96.0.10 service-headliness.dev.svc.cluster.local
-service-headliness.dev.svc.cluster.local. 30 IN A 10.244.1.40
-service-headliness.dev.svc.cluster.local. 30 IN A 10.244.1.39
-service-headliness.dev.svc.cluster.local. 30 IN A 10.244.2.33
+[root@master ~]# dig @10.96.0.10 service-headless.dev.svc.cluster.local
+service-headless.dev.svc.cluster.local. 30 IN A 10.244.1.40
+service-headless.dev.svc.cluster.local. 30 IN A 10.244.1.39
+service-headless.dev.svc.cluster.local. 30 IN A 10.244.2.33
 ~~~
 
 ### NodePort类型的Service
