@@ -33,13 +33,13 @@ Docker 是一个开源的应用容器引擎，让开发者可以打包他们的�
 ```shell
 # 1、卸载旧版本
 yum remove docker \
-    docker-client \
-    docker-client-latest \
-    docker-common \
-    docker-latest \
-    docker-latest-logrotate \
-    docker-logrotate \
-    docker-engine
+                  docker-client \
+                  docker-client-latest \
+                  docker-common \
+                  docker-latest \
+                  docker-latest-logrotate \
+                  docker-logrotate \
+                  docker-engine
 
 # 2、安装需要的包
 yum install -y yum-utils
