@@ -13,7 +13,7 @@
 .idea/
 
 # Maven
-/target/
+*/target/*
 
 # Gradle
 build
