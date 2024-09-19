@@ -9,6 +9,7 @@
     </parent>
     <modules>
         <module>changgou-service-goods</module>
+        <module>changgou-service-canal</module>
     </modules>
     <modelVersion>4.0.0</modelVersion>
 

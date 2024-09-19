@@ -11,12 +11,14 @@
         <module name="changgou-service-goods-api" />
         <module name="changgou-eureka" />
         <module name="changgou-common" />
+        <module name="changgou-service-canal" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="changgou-service-goods-aoi" target="1.8" />
       <module name="changgou-service-goods=api" target="1.8" />
       <module name="changgouparent" target="8" />
+      <module name="com-changgou-canal" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -25,10 +27,12 @@
       <module name="changgou-common-db" options="-parameters" />
       <module name="changgou-eureka" options="-parameters" />
       <module name="changgou-service-api" options="" />
+      <module name="changgou-service-canal" options="-parameters" />
       <module name="changgou-service-goods" options="-parameters" />
       <module name="changgou-service-goods-aoi" options="-parameters" />
       <module name="changgou-service-goods-api" options="-parameters" />
       <module name="changgou-service-goods=api" options="-parameters" />
+      <module name="com-changgou-canal" options="-parameters" />
     </option>
   </component>
 </project>
