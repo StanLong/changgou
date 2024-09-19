@@ -27,5 +27,5 @@ canal:
   client:
     instances:
       example:
-        host: 192.168.211.132
+        host: 192.168.235.11
         port: 11111
