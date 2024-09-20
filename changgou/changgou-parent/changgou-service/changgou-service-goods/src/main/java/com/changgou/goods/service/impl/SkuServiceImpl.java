@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
+
+import java.util.Collections;
 import java.util.List;
 /****
  * @Author:admin
@@ -199,5 +201,16 @@ public class SkuServiceImpl implements SkuService {
     @Override
     public List<Sku> findAll() {
         return skuMapper.selectAll();
+    }
+
+    /***
+     * 根据状态查询SKU列表
+     * @return
+     */
+    @Override
+    public List<Sku> findByStatus(String status) {
+        Sku sku = new Sku();
+        sku.setStatus(status);
+        return skuMapper.select(sku);
     }
 }
