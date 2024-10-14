@@ -513,3 +513,23 @@ Successfully copied 2.05kB to /opt/
 -rw-r--r-- 1 root root  11 2024-01-31 20:13:14 test.java
 ```
 
+**查看挂载卷**
+
+```shell
+[root@node02 docker]# docker volume ls
+DRIVER              VOLUME NAME
+local               jenkins-data
+[root@node02 docker]# docker volume inspect jenkins-data
+[
+    {
+        "CreatedAt": "2024-10-08T09:03:33+08:00",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/jenkins-data/_data",
+        "Name": "jenkins-data",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+```
+

@@ -17,6 +17,44 @@ CONTAINER ID        IMAGE               COMMAND                  CREATED        
 
 # 设置mysql容器自动启动
 [root@changgou ~]# docker update --restart=always 33803e4f9753
+
+---------------------------------------------------------------------------------------------------------------------
+
+docker run -p 3306:3306 --name mysql \ 
+ -v /mydata/mysql/log:/var/log/mysql \ 
+ -v /mydata/mysql/data:/var/lib/mysql \ 
+ -v /mydata/mysql/conf:/etc/mysql \ 
+ -e MYSQL_ROOT_PASSWORD=root \ -d mysql:5.7 
+
+-- 参数说明 
+-p 3306:3306：将容器的 3306 端口映射到主机的 3306 端口 
+-v /mydata/mysql/conf:/etc/mysql：将配置文件夹挂载到主机 
+-v /mydata/mysql/log:/var/log/mysql：将日志文件夹挂载到主机 
+-v /mydata/mysql/data:/var/lib/mysql/：将配置文件夹挂载到主机 
+-e MYSQL_ROOT_PASSWORD=root：初始化 root 用户的密码 
+
+-- MySQL 配置 默认字符集
+vi /mydata/mysql/conf/my.cnf 
+[client] 
+default-character-set=utf8
+
+[mysql] 
+default-character-set=utf8
+
+[mysqld] 
+init_connect='SET collation_connection=utf8_unicode_ci' 
+init_connect='SET NAMES utf8' 
+character-set-server=utf8 
+collation-server=utf8_unicode_ci 
+skip-character-set-client-handshake 
+skip-name-resolve
+
+-- 注 意 ： 解 决 MySQL连 接 慢 的 问 题 
+在配置文件中加入如下，并重启 mysql 
+[mysqld] 
+skip-name-resolve 
+
+解释： skip-name-resolve：跳过域名解析
 ```
 这里下载的是mysql最新版本，用cmd连接正常，但是用navicat 去连会出问题，连接协议不一样，有如下两种改法
 + 下载mysql5.7的版本， docker pull mysql:5.7
@@ -212,8 +250,8 @@ http {
 }
 ```
 
-# 安装redis
-```
+# 三、安装redis
+```shell
 [root@changgou ~]# docker pull redis
 [root@changgou ~]# docker images
 REPOSITORY           TAG                 IMAGE ID            CREATED             SIZE
@@ -221,9 +259,22 @@ redis                latest              44d36d2c2374        2 weeks ago        
 mysql                latest              791b6e40940c        2 weeks ago         465MB
 morunchang/fastdfs   latest              a729ac95698a        3 years ago         460MB
 [root@changgou ~]# docker run -itd --name changgou_redis -p 6379:6379 redis
+
+------------------------------------------------------------------------------
+-- 先创建好挂载文件
+mkdir -p /mydata/redis/conf 
+touch /mydata/redis/conf/redis.conf
+
+-- 运行 redis
+docker run -p 6379:6379 --name redis -v /mydata/redis/data:/data \ 
+ -v /mydata/redis/conf/redis.conf:/etc/redis/redis.conf \ 
+ -d redis redis-server /etc/redis/redis.conf
+ 
+-- 运行 redis 客户端
+docker exec -it redis redis-cli
 ```
 
-# 安装 Elasticsearch
+# 四、安装 Elasticsearch
 
 ```shell
 下载

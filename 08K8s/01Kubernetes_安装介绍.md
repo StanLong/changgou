@@ -348,6 +348,7 @@ EOF
 
 # 4 配置docker阿里云加速器，https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors
 # Docker在默认情况下使用的Cgroup Driver为cgroupfs，而kubernetes推荐使用systemd来代替cgroupfs
+# 如果两边不一样启动kubelet会报错： kubelet cgroup driver: "systemd" is different from docker cgroup driver: "cgroupfs"
 # [root@master ~]# mkdir /etc/docker
 # [root@master ~]# cat <<EOF >  /etc/docker/daemon.json
 # {
