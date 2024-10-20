@@ -537,18 +537,19 @@ GET /user/_search
 
 (4)分页
 
-```properties
-#分页实现
+```json
 GET /user/_search
 {
-  "query":{
+  "query": {
     "match_all": {}
   },
-  "sort":{
-    "age":{
-      "order":"desc"
+  "sort": [
+    {
+      "age": {
+        "order": "desc"
+      }
     }
-  },
+  ],
   "from": 0,
   "size": 2
 }
@@ -562,9 +563,7 @@ size:每页显示条数
 
 效果如下：
 
-![1564606466826](./images/1564606466826.png)
-
-
+![1564606466826](./images/01.png)
 
 ##### 3.2.3.4 过滤查询
 
