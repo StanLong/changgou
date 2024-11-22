@@ -21,17 +21,15 @@
 
 ---
 
-基于现在的互联网现状，更推崇敏捷式开发，这样就导致项目的迭代速度更快，但是由于开发团队与运 维团队的沟通问题，会导致新版本上线的时间成本很高。这又违背的敏捷式开发的初的目的。
+基于现在的互联网现状，更推崇敏捷式开发，这样就导致项目的迭代速度更快，但是由于开发团队与运维团队的沟通问题，会导致新版本上线的时间成本很高。这又违背了敏捷式开发的最初目的。
 
 那么如果让开发团队和运维团队整合到成一个团队，协同应对一套软件呢？这就被称为DevOps。
 
-DevOps，字面意思是Development &Operations的缩写，也就是开发&运维。
+DevOps，字面意思是Development & Operations的缩写，也就是开发&运维。
 
 虽然字面意思只涉及到了开发团队和运维团队，其实QA测试团队也是参与其中的。
 
-网上可以查看到DevOps的符号类似于一个无穷大的符号。
-
-为了保证整体流程可以高效的完成，各个阶段都有比较常见的工具，如下图：
+网上可以查看到DevOps的符号类似于一个无穷大的符号。为了保证整体流程可以高效的完成，各个阶段都有比较常见的工具，如下图：
 
 ![](./doc/01.png)
 
@@ -54,9 +52,7 @@ DevOps的方式可以让公司能够更快地应对更新和市场发展变化�
 - MONITOR：项目部署上线后，需要持续的监控产品。 
 - INTEGRATE：然后将监控阶段收到的反馈发送回PLAN阶段，整体反复的流程就是DevOps的核 心，即持续集成、持续部署。
 
-最终可以给DevOps下一个定义：DevOps 强调的是高效组织团队之间如何通过自动化的工具协作和沟通 来完成软件的生命周期管理，从而更快、更频繁地交付更稳定的软件。
-
-自动化的工具协作和沟通来完成软件的生命周期管理 
+最终可以给DevOps下一个定义：DevOps 强调的是高效组织团队之间如何通过自动化的工具协作和沟通来完成软件的生命周期管理，从而更快、更频繁地交付更稳定的软件。
 
 ## 二、Code阶段工具 
 
@@ -108,16 +104,25 @@ https://git-scm.com/（傻瓜式安装）
 
   ```shell
   docker-compose up -d
+  -- 这里启动时候会比较长，可以先查看docker的内部日志
+  docker-compose logs -f
   ```
 
-- 访问GitLab首页
+  如果出现了502的页面，再等一会就正常了
 
   ![](./doc/02.png)
 
+- 访问GitLab首页
+
+  默认管理员用户root
+  
+  ![](./doc/03.png)
+  
 - 查看root用户初始密码
 
   ```shell
-  docker exec -it gitlab cat /etc/gitlab/initial_root_password
+  docker exec -it gitlab /bin/bash
+  cat /etc/gitlab/initial_root_password
   ```
 
 登录root用户，第一次登录后需要修改密码，搞定后，即可像Gitee、GitHub一样使用。
@@ -141,10 +146,6 @@ https://git-scm.com/（傻瓜式安装）
 ### 4.2 Docker-Compose安装 
 
 - 下载Docker/Compose：https://github.com/docker/compose 
-
-- 将下载好的docker-compose-Linux-x86_64文件移动到Linux操作系统：…… 
-
-- 设置docker-compose-Linux-x86_64文件权限，并移动到$PATH目录
 
   ```shell
   # 设置文件权限 
@@ -176,7 +177,9 @@ Jenkins应用广泛，大多数互联网公司都采用Jenkins配合GitLab、Doc
 
 Jenkins强大的就在于插件，Jenkins官方提供了大量的插件库，来自动化CI/CD过程中的各种琐碎功能。
 
-Jenkins主要的工作就是将GitLab上可以构建的工程代码拉取并且进行构建，再根据流程可以选择发布 到测试环境或是生产环境。
+![](./doc/04.png)
+
+Jenkins主要的工作就是将GitLab上可以构建的工程代码拉取并且进行构建，再根据流程可以选择发布到测试环境或是生产环境。
 
 一般是GitLab上的代码经过大量的测试后，确定发行版本，再发布到生产环境。
 
@@ -214,19 +217,23 @@ CI/CD可以理解为：
 - 首次启动会因为数据卷data目录没有权限导致启动失败，设置data目录写权限
 
   ```shell
-  chmod -R a+w data/
+  # 首次启动后查看 jenkins 日志
+  docker logs -f jenkins
+  # 修改 data 目录权限
+  chmod -R 777 data/
   ```
 
 - 重新启动Jenkins容器后，由于Jenkins需要下载大量内容，但是由于默认下载地址下载速度较慢， 需要重新设置下载地址为国内镜像站。
 
   这里有个插件版本和jenkins不匹配导致产生的坑，readme.md 文件里有记录
 
-- 再次重启Jenkins容器，访问Jenkins（需要稍微等会）
+- 配置好国内镜像站后再次重启Jenkins容器，访问Jenkins（需要稍微等会）
 
 - 查看密码登录Jenkins，并登录下载插件
 
   ```shell
-  docker exec -it jenkins cat /var/jenkins_home/secrets/initialAdminPassword 
+  docker exec -it jenkins 
+  cat /var/jenkins_home/secrets/initialAdminPassword 
   ```
 
 - 选择需要安装的插件
